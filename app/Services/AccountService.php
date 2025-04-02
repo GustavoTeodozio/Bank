@@ -23,6 +23,11 @@ class AccountService
         return $this->asaas->enviarRequisicao('accounts', $dados, 'POST');
     }
 
+    public function pegarSaldo (array $dados)
+    {
+        return $this->asaas->enviarRequisicao('finance/balance', $dados, 'GET');
+    }
+
     //extrato
 
     //transferir

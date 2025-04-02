@@ -27,8 +27,9 @@ return new class extends Migration
             $table->string('province');
             $table->string('postalCode');
             $table->string('asaas_id')->nullable();
-            $table->string('wallet_id')->nullable(); // Adicionando o wallet_id
-            $table->json('account_number')->nullable(); // Adicionando account_number como JSON
+            $table->string('wallet_id')->nullable();
+            $table->json('account_number')->nullable(); 
+            $table->string('apiKey')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

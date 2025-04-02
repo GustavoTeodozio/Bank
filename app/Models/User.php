@@ -32,6 +32,7 @@ class User extends Authenticatable
         'asaas_id',
         'wallet_id',
         'account_number',
+        'apiKey',
     ];
 
     /**

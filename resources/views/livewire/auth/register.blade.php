@@ -84,13 +84,15 @@ new #[Layout('components.layouts.auth')] class extends Component {
             $user->address = $asaasResponse['address'] ?? '';
             $user->addressNumber = $asaasResponse['addressNumber'] ?? ''; 
             $user->province = $asaasResponse['province'] ?? ''; 
-            $user->postal_code = $asaasResponse['postalCode'] ?? '';
+            $user->postalCode = $asaasResponse['postalCode'] ?? '';
             $user->cpfCnpj = $asaasResponse['cpfCnpj'] ?? ''; 
             $user->birthDate = $asaasResponse['birthDate'] ?? '';
             $user->wallet_id = $asaasResponse['walletId'] ?? '';
             $user->account_number = isset($asaasResponse['accountNumber']) ? json_encode($asaasResponse['accountNumber']) : null;
             $user->mobilePhone = $asaasResponse['mobilePhone'] ?? '';
             $user->incomeValue = $asaasResponse['incomeValue'] ?? 0.00;
+            $user->apiKey = $asaasResponse['apiKey'] ?? '';
+
 
             $user->save();
         }
