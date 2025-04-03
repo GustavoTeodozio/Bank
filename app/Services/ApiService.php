@@ -5,7 +5,7 @@ namespace App\Services;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
-class AsaasService
+class ApiService
 {
     protected string $apiUrl;
     protected string $apiKey;

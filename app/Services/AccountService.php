@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Services\AsaasService;
+use App\Services\ApiService;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -10,23 +10,23 @@ class AccountService
 
 {
 
-    protected AsaasService $asaas;
+    protected ApiService $apiService;
 
-    public function __construct(AsaasService $asaas)
+    public function __construct(ApiService $apiService)
     {
-        $this->asaas = $asaas;
+        $this->apiService = $apiService;
         
     }
 
     public function criarConta(array $dados)
     {
-        return $this->asaas->enviarRequisicao('accounts', $dados, 'POST');
+        return $this->apiService->enviarRequisicao('accounts', $dados, 'POST');
     }
 
-    public function pegarSaldo (array $dados)
-    {
-        return $this->asaas->enviarRequisicao('finance/balance', $dados, 'GET');
-    }
+    // public function pegarSaldo (array $dados)
+    // {
+    //     return $this->apiService->enviarRequisicao('finance/balance', $dados, 'GET');
+    // }
 
     //extrato
 

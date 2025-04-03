@@ -8,7 +8,6 @@ use Illuminate\Validation\Rules;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 use Illuminate\Http\Request;
-use App\Services\AsaasService;
 use App\Services\AccountService;
 
 new #[Layout('components.layouts.auth')] class extends Component {
@@ -52,7 +51,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
         event(new Registered(($user = User::create($validated))));
 
-        $asaasData = [
+        $apiData = [
             'name' => $validated['name'],
             'email' => $validated['email'],
             'cpfCnpj' => $validated['cpfCnpj'],
@@ -67,31 +66,31 @@ new #[Layout('components.layouts.auth')] class extends Component {
             
         ];
 
-        $asaasResponse = $accountService->criarConta($asaasData);
+        $apiResponse = $accountService->criarConta($apiData);
 
-        if (isset($asaasResponse['error'])) {
-            \Log::error('Erro ao criar conta no Asaas', ['error' => $asaasResponse]);
+        if (isset($apiResponse['error'])) {
+            \Log::error('Erro ao criar conta no Asaas', ['error' => $apiResponse]);
 
 
             $user->delete();
 
-            throw new \Exception("Erro ao registrar usuário no Asaas: " . json_encode($asaasResponse));
+            throw new \Exception("Erro ao registrar usuário no Asaas: " . json_encode($apiResponse));
         }
 
 
-        if (isset($asaasResponse['id'])) {
-            $user->asaas_id = $asaasResponse['id'] ?? null;
-            $user->address = $asaasResponse['address'] ?? '';
-            $user->addressNumber = $asaasResponse['addressNumber'] ?? ''; 
-            $user->province = $asaasResponse['province'] ?? ''; 
-            $user->postalCode = $asaasResponse['postalCode'] ?? '';
-            $user->cpfCnpj = $asaasResponse['cpfCnpj'] ?? ''; 
-            $user->birthDate = $asaasResponse['birthDate'] ?? '';
-            $user->wallet_id = $asaasResponse['walletId'] ?? '';
-            $user->account_number = isset($asaasResponse['accountNumber']) ? json_encode($asaasResponse['accountNumber']) : null;
-            $user->mobilePhone = $asaasResponse['mobilePhone'] ?? '';
-            $user->incomeValue = $asaasResponse['incomeValue'] ?? 0.00;
-            $user->apiKey = $asaasResponse['apiKey'] ?? '';
+        if (isset($apiResponse['id'])) {
+            $user->asaas_id = $apiResponse['id'] ?? null;
+            $user->address = $apiResponse['address'] ?? '';
+            $user->addressNumber = $apiResponse['addressNumber'] ?? ''; 
+            $user->province = $apiResponse['province'] ?? ''; 
+            $user->postalCode = $apiResponse['postalCode'] ?? '';
+            $user->cpfCnpj = $apiResponse['cpfCnpj'] ?? ''; 
+            $user->birthDate = $apiResponse['birthDate'] ?? '';
+            $user->wallet_id = $apiResponse['walletId'] ?? '';
+            $user->account_number = isset($apiResponse['accountNumber']) ? json_encode($apiResponse['accountNumber']) : null;
+            $user->mobilePhone = $apiResponse['mobilePhone'] ?? '';
+            $user->incomeValue = $apiResponse['incomeValue'] ?? 0.00;
+            $user->apiKey = $apiResponse['apiKey'] ?? '';
 
 
             $user->save();
