@@ -1,4 +1,4 @@
-não esqueça de mudar 
+não esqueça de adicionar sua api key
 
 
 ASAAS_API_KEY=
