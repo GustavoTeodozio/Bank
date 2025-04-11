@@ -23,10 +23,10 @@ class AccountService
         return $this->apiService->enviarRequisicao('accounts', $dados, 'POST');
     }
 
-    // public function pegarSaldo (array $dados)
-    // {
-    //     return $this->apiService->enviarRequisicao('finance/balance', $dados, 'GET');
-    // }
+    public function pegarSaldo (array $dados)
+    {
+        return $this->apiService->enviarRequisicao('finance/balance', $dados, 'GET');
+    }
 
     //extrato
 

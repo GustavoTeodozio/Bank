@@ -11,96 +11,7 @@ use Illuminate\Http\Request;
 use App\Services\AccountService;
 
 new #[Layout('components.layouts.auth')] class extends Component {
-    public string $name = '';
-    public string $email = '';
-    public string $password = '';
-    public string $password_confirmation = '';
-    public string $cpfCnpj = '';
-    public string $birthDate = '';
-    public string $companyType = '';
-    public string $mobilePhone = '';
-    public string $incomeValue = '';
-    public string $address = '';
-    public string $addressNumber = '';
-    public string $complement = '';
-    public string $province = '';
-    public string $postalCode = '';
 
-    /**
-     * Handle an incoming registration request.
-     */
-    public function register(AccountService $accountService): void
-    {
-        $validated = $this->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
-            'cpfCnpj' => ['required', 'string', 'unique:' . User::class],
-            'birthDate' => ['required', 'date'],
-            'mobilePhone' => ['required', 'string'],
-            'incomeValue' => ['required', 'numeric'],
-            'address' => ['required', 'string'],
-            'addressNumber' => ['required', 'string'],
-            'complement' => ['nullable', 'string'],
-            'province' => ['required', 'string'],
-            'postalCode' => ['required', 'string'],
-            'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
-
-        ]);
-
-        $validated['password'] = Hash::make($validated['password']);
-
-        event(new Registered(($user = User::create($validated))));
-
-        $apiData = [
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'cpfCnpj' => $validated['cpfCnpj'],
-            'birthDate' => $validated['birthDate'],
-            'mobilePhone' => $validated['mobilePhone'],
-            'incomeValue' => $validated['incomeValue'],
-            'address' => $validated['address'],
-            'addressNumber' => $validated['addressNumber'],
-            'complement' => $validated['complement'] ?? '',
-            'province' => $validated['province'],
-            'postalCode' => $validated['postalCode'],
-            
-        ];
-
-        $apiResponse = $accountService->criarConta($apiData);
-
-        if (isset($apiResponse['error'])) {
-            \Log::error('Erro ao criar conta no Asaas', ['error' => $apiResponse]);
-
-
-            $user->delete();
-
-            throw new \Exception("Erro ao registrar usuário no Asaas: " . json_encode($apiResponse));
-        }
-
-
-        if (isset($apiResponse['id'])) {
-            $user->asaas_id = $apiResponse['id'] ?? null;
-            $user->address = $apiResponse['address'] ?? '';
-            $user->addressNumber = $apiResponse['addressNumber'] ?? ''; 
-            $user->province = $apiResponse['province'] ?? ''; 
-            $user->postalCode = $apiResponse['postalCode'] ?? '';
-            $user->cpfCnpj = $apiResponse['cpfCnpj'] ?? ''; 
-            $user->birthDate = $apiResponse['birthDate'] ?? '';
-            $user->wallet_id = $apiResponse['walletId'] ?? '';
-            $user->account_number = isset($apiResponse['accountNumber']) ? json_encode($apiResponse['accountNumber']) : null;
-            $user->mobilePhone = $apiResponse['mobilePhone'] ?? '';
-            $user->incomeValue = $apiResponse['incomeValue'] ?? 0.00;
-            $user->apiKey = $apiResponse['apiKey'] ?? '';
-
-
-            $user->save();
-        }
-
-
-        Auth::login($user);
-
-        $this->redirectIntended(route('dashboard', absolute: false), navigate: true);
-    }
 }; ?>
 
 <div class="flex flex-col gap-6">
@@ -109,58 +20,59 @@ new #[Layout('components.layouts.auth')] class extends Component {
     <!-- Session Status -->
     <x-auth-session-status class="text-center" :status="session('status')" />
 
-    <form wire:submit="register" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <form method="POST" action="{{ route('register') }}" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        @csrf
+
         <!-- Name -->
-        <flux:input wire:model="name" :label="__('Name')" type="text" required autofocus autocomplete="name"
+        <flux:input name="name" :label="__('Name')" type="text" required autofocus autocomplete="name"
             :placeholder="__('Full name')" class="w-full" />
 
         <!-- Email Address -->
-        <flux:input wire:model="email" :label="__('Email address')" type="email" required autocomplete="email"
+        <flux:input name="email" :label="__('Email address')" type="email" required autocomplete="email"
             placeholder="email@example.com" class="w-full" />
 
         <!-- CPF/CNPJ -->
-        <flux:input wire:model="cpfCnpj" :label="__('CPF/CNPJ')" type="text" required autocomplete="cpfCnpj"
+        <flux:input name="cpfCnpj" :label="__('CPF/CNPJ')" type="text" required autocomplete="cpfCnpj"
             :placeholder="__('CPF/CNPJ')" class="w-full" />
 
         <!-- Birth Date -->
-        <flux:input wire:model="birthDate" :label="__('Date of Birth')" type="date" required autocomplete="bday"
+        <flux:input name="birthDate" :label="__('Date of Birth')" type="date" required autocomplete="bday"
             :placeholder="__('YYYY-MM-DD')" class="w-full" />
 
         <!-- Mobile Phone -->
-        <flux:input wire:model="mobilePhone" :label="__('Mobile Phone')" type="tel" required autocomplete="tel"
+        <flux:input name="mobilePhone" :label="__('Mobile Phone')" type="tel" required autocomplete="tel"
             :placeholder="__('(XX) XXXXX-XXXX')" class="w-full" />
 
         <!-- Income Value -->
-        <flux:input wire:model="incomeValue" :label="__('Income Value')" type="number" required step="0.01"
+        <flux:input name="incomeValue" :label="__('Income Value')" type="number" required step="0.01"
             :placeholder="__('0.00')" class="w-full" />
 
-
         <!-- Address -->
-        <flux:input wire:model="address" :label="__('Address')" type="text" required autocomplete="street-address"
+        <flux:input name="address" :label="__('Address')" type="text" required autocomplete="street-address"
             :placeholder="__('Street name, Avenue, etc.')" class="w-full" />
 
         <!-- Address Number -->
-        <flux:input wire:model="addressNumber" :label="__('Address Number')" type="text" required
-            autocomplete="address-line2" :placeholder="__('123')" class="w-full" />
+        <flux:input name="addressNumber" :label="__('Address Number')" type="text" required autocomplete="address-line2"
+            :placeholder="__('123')" class="w-full" />
 
         <!-- Complement -->
-        <flux:input wire:model="complement" :label="__('Complement')" type="text" autocomplete="address-line3"
+        <flux:input name="complement" :label="__('Complement')" type="text" autocomplete="address-line3"
             :placeholder="__('Apartment, floor, etc.')" class="w-full" />
 
         <!-- Province -->
-        <flux:input wire:model="province" :label="__('Province/State')" type="text" required autocomplete="region"
+        <flux:input name="province" :label="__('Province/State')" type="text" required autocomplete="region"
             :placeholder="__('State or province')" class="w-full" />
 
         <!-- Postal Code -->
-        <flux:input wire:model="postalCode" :label="__('Postal Code')" type="text" required autocomplete="postal-code"
+        <flux:input name="postalCode" :label="__('Postal Code')" type="text" required autocomplete="postal-code"
             :placeholder="__('XXXXX-XXX')" class="w-full" />
 
         <!-- Password -->
-        <flux:input wire:model="password" :label="__('Password')" type="password" required autocomplete="new-password"
+        <flux:input name="password" :label="__('Password')" type="password" required autocomplete="new-password"
             :placeholder="__('Password')" class="w-full" />
 
         <!-- Confirm Password -->
-        <flux:input wire:model="password_confirmation" :label="__('Confirm password')" type="password" required
+        <flux:input name="password_confirmation" :label="__('Confirm password')" type="password" required
             autocomplete="new-password" :placeholder="__('Confirm password')" class="w-full" />
 
         <!-- Botão de Criar Conta ocupa toda a linha -->
@@ -170,6 +82,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
             </flux:button>
         </div>
     </form>
+
 
     <div class="space-x-1 text-center text-sm text-zinc-600 dark:text-zinc-400">
         {{ __('Already have an account?') }}

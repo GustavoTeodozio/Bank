@@ -28,9 +28,10 @@
                 </flux:navlist.item>
 
                 <flux:menu class="w-[220px]">
-                    <flux:menu.item icon="qr-code" wire:navigate> {{-- :href="route('transfer.pix')" --}}
+                    <flux:menu.item icon="qr-code" :href="route('pix')" wire:navigate>
                         {{ __('PIX') }}
                     </flux:menu.item>
+
                     <flux:menu.item {{-- :href="route('transfer.ted_doc')" --}}icon="banknotes" wire:navigate>
                         {{ __('TED/DOC') }}
                     </flux:menu.item>
